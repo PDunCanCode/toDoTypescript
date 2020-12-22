@@ -15,7 +15,7 @@ function renderTodo(todo: Todo) {
   node.setAttribute("data-key", todo.id.toString());
   node.innerHTML = `
       <input id="${todo.id}" type="checkbox"/>
-      <label for="${todo.id}" class="tick js-tick"></label>
+      <label for="${todo.id}" class="tick tick"></label>
       <span>${todo.text}</span>
       <button class="delete-todo delete-todo">
       <svg><use href="#delete-icon"></use></svg>
