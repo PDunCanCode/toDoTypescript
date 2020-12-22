@@ -1,21 +1,44 @@
-var todoItems = [];
-function addTodo(text) {
-    var todo = {
-        text: text,
-        checked: false,
-        id: Date.now()
-    };
-    todoItems.push(todo);
-    console.log(todoItems);
+let todoItems = [];
+
+function renderTodo(todo) {
+  const list = document.querySelector(".todo-list");
+
+  const isChecked = todo.checked ? "done" : "";
+  const node = document.createElement("li");
+  node.setAttribute("class", `todo-item ${isChecked}`);
+  node.setAttribute("data-key", todo.id);
+  node.innerHTML = `
+    <input id="${todo.id}" type="checkbox"/>
+    <label for="${todo.id}" class="tick js-tick"></label>
+    <span>${todo.text}</span>
+    <button class="delete-todo js-delete-todo">
+    <svg><use href="#delete-icon"></use></svg>
+    </button>
+  `;
+
+  list.append(node);
 }
-var form = document.querySelector(".ts-form");
-form.addEventListener("submit", function (event) {
-    event.preventDefault();
-    var input = document.querySelector(".ts-todo-input");
-    var text = input.value.trim();
-    if (text !== "") {
-        addTodo(text);
-        input.value = "";
-        input.focus();
-    }
+
+function addTodo(text) {
+  const todo = {
+    text,
+    checked: false,
+    id: Date.now(),
+  };
+
+  todoItems.push(todo);
+  renderTodo(todo);
+}
+
+const form = document.querySelector(".form");
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const input = document.querySelector(".todo-input");
+
+  const text = input.value.trim();
+  if (text !== "") {
+    addTodo(text);
+    input.value = "";
+    input.focus();
+  }
 });

@@ -1,13 +1,13 @@
-//type Todo = {
-// id: number;
-// text: string;
-//checked: boolean;
-// place?: Place
-//};
+type Todoa = {
+id: number;
+ text: string;
+checked: boolean;
+place?: Place1
+};
 
-//type CompletedTodo = Todo & {
- // readonly done: true;
-//};
+type CompletedTodo = Todo & {
+ readonly done: true;
+};
 
 type Place1 = 'home' | 'work' | {custom: string} 
 
@@ -26,7 +26,7 @@ function completeAll(todos: readonly Todo[]): CompletedTodo[] {
   }));
 }
 
-function placeToString1(place: Place): string {
+function placeToString1(place: Place1): string {
     if (place === 'home') {
         return '🏠 Home'
     } else if (place === 'work') {
