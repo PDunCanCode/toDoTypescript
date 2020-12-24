@@ -1,31 +1,45 @@
-type Todo = {
-  id: number;
+let todoItems: any[] = [];
+
+function renderTodo(todo: {
   text: string;
   checked: boolean;
-};
+  id: any;
+  deleted?: boolean;
+}) {
+  localStorage.setItem("todoItems", JSON.stringify(todoItems));
 
-let todoItems: Todo[] = [];
+  const list = document.querySelector(".todo-list") as HTMLLIElement;
+  const item = document.querySelector(
+    `[data-key='${todo.id}']`
+  ) as HTMLLIElement;
 
-function renderTodo(todo: Todo) {
-  const list = document.querySelector(".todo-list") as HTMLInputElement;
+  if (todo.deleted) {
+    item.remove();
+    if (todoItems.length === 0) list.innerHTML = "";
+    return;
+  }
 
   const isChecked = todo.checked ? "done" : "";
-  const node = document.createElement("li");
+  const node = document.createElement("li") as HTMLLIElement;
   node.setAttribute("class", `todo-item ${isChecked}`);
-  node.setAttribute("data-key", todo.id.toString());
+  node.setAttribute("data-key", todo.id);
   node.innerHTML = `
-      <input id="${todo.id}" type="checkbox"/>
-      <label for="${todo.id}" class="tick tick"></label>
-      <span>${todo.text}</span>
-      <button class="delete-todo delete-todo">
-      <svg><use href="#delete-icon"></use></svg>
-      </button>
-    `;
+    <input id="${todo.id}" type="checkbox"/>
+    <label for="${todo.id}" class="tick tick"></label>
+    <span>${todo.text}</span>
+    <button class="delete-todo delete-todo">
+    <svg><use href="#delete-icon"></use></svg>
+    </button>
+  `;
 
-  list.append(node);
+  if (item) {
+    list.replaceChild(node, item);
+  } else {
+    list.append(node);
+  }
 }
 
-function addTodo(text: any) {
+function addTodo(text: string) {
   const todo = {
     text,
     checked: false,
@@ -33,12 +47,27 @@ function addTodo(text: any) {
   };
 
   todoItems.push(todo);
-  console.log(todoItems);
+  renderTodo(todo);
 }
-function toggleDone(key: number | string) {
-  const index = todoItems.findIndexById((item) => item.id === Number(key));
+
+function toggleDone(key: any) {
+  const index = todoItems.findIndex(
+    (item: { id: number }) => item.id === Number(key)
+  );
   todoItems[index].checked = !todoItems[index].checked;
   renderTodo(todoItems[index]);
+}
+
+function deleteTodo(key: any) {
+  const index = todoItems.findIndex(
+    (item: { id: number }) => item.id === Number(key)
+  );
+  const todo = {
+    deleted: true,
+    ...todoItems[index],
+  };
+  todoItems = todoItems.filter((item) => item.id !== Number(key));
+  renderTodo(todo);
 }
 
 const form = document.querySelector(".form") as HTMLFormElement;
@@ -54,10 +83,25 @@ form.addEventListener("submit", (event) => {
   }
 });
 
-const list = document.querySelector(".todo-list") as HTMLInputElement;
+const list = document.querySelector(".todo-list") as HTMLLIElement;
 list.addEventListener("click", (event) => {
-  if (event.target.classList.contains("tick")) {
-    const itemKey = event.target.parentElement.dataset.key;
+  if ((event.target as Element).classList.contains("tick")) {
+    const itemKey = (event.target as Element).parentElement.dataset.key;
     toggleDone(itemKey);
+  }
+
+  if ((event.target as Element).classList.contains("delete-todo")) {
+    const itemKey = (event.target as Element).parentElement.dataset.key;
+    deleteTodo(itemKey);
+  }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const ref = localStorage.getItem("todoItems");
+  if (ref) {
+    todoItems = JSON.parse(ref);
+    todoItems.forEach((t) => {
+      renderTodo(t);
+    });
   }
 });
